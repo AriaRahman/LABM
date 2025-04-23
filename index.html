@@ -72,35 +72,40 @@
             <label for="USERname">User Name:</label>
             <input type="text" id="USERname" name="USERname" />
             <br />
-            <span id="validname" style="color: brown"></span>
+            <p id="validname" style="color: brown"></p>
 
             <hr />
             <!--this is for EMAIL -->
 
             <label for="email">Email ID:</label>
             <input type="text" id="email" name="email" />
-            <p id="validemail"></p>
+            <p id="validemail" style="color: brown"></p>
             <hr />
             <!--this is for DOB -->
 
             <label for="DOB">Date of Birth:</label>
-            <input type="text" id="DOB" name="DOB" />
+            <input type="date" id="DOB" name="DOB" placeholder="YYYY-MM-DD" />
+            <p id="validdob" style="color: brown"></p>
             <hr />
+            <!--this is for GENDER -->
             <label for="gender">Gender:</label><br />
-            <input type="radio" id="FEMALE" name="" value="FEMALE" />
+            <input type="radio" id="FEMALE" name="gender" value="FEMALE" />
             <label for="FEMALE">FEMALE</label><br />
-            <input type="radio" id="MALE" name="MALE" value="MALE" />
+            <input type="radio" id="MALE" name="gender" value="MALE" />
             <label for="MALE">MALE</label>
+            <p id="validgender" style="color: brown"></p>
             <hr />
             <!--this is for COUNTRY -->
 
-            <label for="country">Country:</label>
+            <label for="country">Select Country:</label>
+
             <select
               class="form-select"
-              autocomplete="country"
+              autocomplete="off"
               name="country"
               id="country"
             >
+              <option value="" disabled selected>country</option>
               <option value="AS">American Samoa</option>
               <option value="AD">Andorra</option>
               <option value="AO">Angola</option>
@@ -113,31 +118,34 @@
               <option value="BM">Bermuda</option>
               <option value="BG">Bulgaria</option>
               <option value="BI">Burundi</option>
-              <option value="CV">Cabo Verde</option>
-              <option value="KH">Cambodia</option>
-              <option value="CM">Cameroon</option>
-              <option value="CA">Canada</option>
             </select>
+            <p id="validcountry" style="color: brown"></p>
             <hr />
+            <p id="validcountry" style="color: brown"></p>
             <!--this is for AQI -->
 
-            <label for="AQI">Opinions about AQI:</label>
+            <label for="AQI"
+              >Opinions about AQI(<b style="color: brown">optional</b>):</label
+            >
             <input type="text" id="AQI" name="AQI" />
             <hr />
             <!--this is for PASSWORD -->
 
             <label for="password">password: </label>
             <input type="password" id="password" name="password" />
+            <p id="validpass" style="color: brown"></p>
             <hr />
             <!--this is for CONFIRM PASSWORD -->
 
             <label for="confirmpass">Confirm Password :</label>
             <input type="password" id="confirmpass" name="confirmpass" />
+            <p id="validconfirmpass" style="color: brown"></p>
             <hr />
             <!--this is for BACKGROUND COLOR -->
 
             <label for="color">Select Background Color:</label>
-            <input type="color" id="color" name="color" />
+            <input type="color" id="color" name="color" value="#000000" />
+            <p id="validcolor" style="color: brown"></p>
             <hr />
             <!--this is for CHECK BOX -->
 
@@ -149,6 +157,7 @@
                 read more
               </a></label
             >
+            <p id="validterms" style="color: brown"></p>
             <br />
 
             <input
@@ -191,7 +200,6 @@
 
         if (email === "" || !regex.test(email)) {
           emailError.innerText = "*Email format not valid!";
-          emailError.style.color = "brown";
           return false;
         } else {
           emailError.innerText = "";
@@ -199,11 +207,133 @@
         }
       }
 
+      function validateDOB() {
+        const dobInput = document.getElementById("DOB").value.trim();
+        const dobError = document.getElementById("validdob");
+
+        const birthDate = new Date(dobInput);
+        const today = new Date();
+        const age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+
+        const is18 =
+          age > 18 ||
+          (age === 18 && m >= 0 && today.getDate() >= birthDate.getDate());
+
+        if (!dobInput || isNaN(birthDate) || !is18) {
+          dobError.innerText = "*Must be 18 or older.";
+          return false;
+        } else {
+          dobError.innerText = "";
+          return true;
+        }
+      }
+
+      function validatePassword() {
+        const pass = document.getElementById("password").value.trim();
+        const confirm = document.getElementById("confirmpass").value.trim();
+        const passError = document.getElementById("validpass");
+        const confirmError = document.getElementById("validconfirmpass");
+
+        const regex = /^[a-zA-Z0-9]{8}$/;
+
+        let valid = true;
+
+        if (!regex.test(pass)) {
+          passError.innerText = "*must be alphanumeric(8 characters).";
+          valid = false;
+        } else {
+          passError.innerText = "";
+        }
+
+        if (pass !== confirm) {
+          confirmError.innerText = "*Passwords do not match.";
+          valid = false;
+        } else {
+          confirmError.innerText = "";
+        }
+
+        return valid;
+      }
+
+      function validateGender() {
+        const genderError = document.getElementById("validgender");
+        const selected = document.querySelector('input[name="gender"]:checked');
+
+        if (!selected) {
+          genderError.innerText = "*Please select a gender.";
+          return false;
+        } else {
+          genderError.innerText = "";
+          return true;
+        }
+      }
+      function validateCountry() {
+        const country = document.getElementById("country").value;
+        const countryError = document.getElementById("validcountry");
+
+        if (!country) {
+          countryError.innerText = "*Please select your country.";
+          return false;
+        } else {
+          countryError.innerText = "";
+          return true;
+        }
+      }
+
+      function validateColor() {
+        const colorInput = document.getElementById("color");
+        const colorError = document.getElementById("validcolor");
+
+        if (colorInput.value === "#000000") {
+          colorError.innerText = "*Please choose a background color.";
+          return false;
+        } else {
+          colorError.innerText = "";
+          return true;
+        }
+      }
+
+      function validateTerms() {
+        const termsCheckbox = document.getElementById("TERMS");
+        const termsError = document.getElementById("validterms");
+
+        if (!termsCheckbox.checked) {
+          termsError.innerText = "*You must accept the Terms!";
+          return false;
+        } else {
+          termsError.innerText = "";
+          return true;
+        }
+      }
       function validate() {
         const nameValid = validateName();
         const emailValid = validateEmail();
+        const dobValid = validateDOB();
+        const passValid = validatePassword();
+        const genderValid = validateGender();
+        const countryValid = validateCountry();
+        const colorValid = validateColor();
+        const termsValid = validateTerms();
 
-        return nameValid && emailValid;
+        if (
+          nameValid &&
+          emailValid &&
+          dobValid &&
+          passValid &&
+          genderValid &&
+          countryValid &&
+          colorValid &&
+          termsValid
+        ) {
+          alert("✅ Registration Complete!");
+          setTimeout(() => {
+            location.reload(); // Auto-refresh after 1.5 seconds
+          }, 1000);
+          return false; // Prevent form from actually submitting to server
+        }
+
+        return false; // Prevent form submission if not valid
       }
     </script>
   </body>
