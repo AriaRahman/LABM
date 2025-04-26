@@ -327,13 +327,8 @@
           termsValid
         ) {
           alert("✅ Registration Complete!");
-          setTimeout(() => {
-            location.reload(); // Auto-refresh after 1.5 seconds
-          }, 1000);
-          return false; // Prevent form from actually submitting to server
+          document.getElementById("form").reset();
         }
-
-        return false; // Prevent form submission if not valid
       }
     </script>
   </body>
