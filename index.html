@@ -43,6 +43,7 @@
       .left-bottom {
         flex: 1;
         background-color: peru;
+        padding: 15px;
       }
 
       .right-box {
@@ -63,10 +64,10 @@
         <!--this is for left TOP -->
 
         <div class="left-top">
-          <h2 style="text-align: center; margin-bottom: 20px">
+          <h2 style="text-align: center; margin-bottom: 10px">
             REGISTRATION FORM
           </h2>
-          <form id="form">
+          <form id="form" action="register.php" method="post" target="_blank">
             <!--this is for USERNAME -->
 
             <label for="USERname">User Name:</label>
@@ -127,7 +128,7 @@
             <label for="AQI"
               >Opinions about AQI(<b style="color: brown">optional</b>):</label
             >
-            <input type="text" id="AQI" name="AQI" />
+            <input type="message" id="AQI" name="AQI" />
             <hr />
             <!--this is for PASSWORD -->
 
@@ -164,13 +165,36 @@
               type="submit"
               name="submit"
               value="submit"
-              style="float: right; margin-top: 10px"
+              style="text-align: right"
               onclick="return validate()"
             />
           </form>
         </div>
 
-        <div class="left-bottom">Left Bottom Box</div>
+        <div class="left-bottom">
+          <h2 style="text-align: center; margin-bottom: 10px">LOGIN</h2>
+          <form id="Bottomform">
+            <!--this is for USERNAME -->
+
+            <label for="USERname">User Name:</label>
+            <input type="text" id="USERname" name="USERname" />
+            <br />
+            <p id="validname" style="color: brown"></p>
+            <!--this is for PASSWORD -->
+            <br />
+            <label for="password">password: </label>
+            <input type="password" id="password" name="password" />
+            <p id="validpass" style="color: brown"></p>
+
+            <input
+              type="button"
+              name="LOGIN"
+              value="LOGIN"
+              style="float: right; margin-top: 8px"
+              onclick="return Login()"
+            />
+          </form>
+        </div>
       </div>
       <div class="right-box">Right Box</div>
     </div>
@@ -183,7 +207,7 @@
 
         const regex = /^[A-Za-z\s]+$/;
 
-        if (name === "" || !regex.test(name)) {
+        if (name === "" || !regex.test(name) || name.length <= 2) {
           nameError.innerText = "*Enter valid name with alphabets only!";
           return false;
         } else {
@@ -196,7 +220,7 @@
         const email = document.getElementById("email").value.trim();
         const emailError = document.getElementById("validemail");
 
-        const regex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+        const regex = /^[^@\s]+@(gmail\.com|yahoo\.com|hotmail\.com)$/;
 
         if (email === "" || !regex.test(email)) {
           emailError.innerText = "*Email format not valid!";
@@ -214,14 +238,9 @@
         const birthDate = new Date(dobInput);
         const today = new Date();
         const age = today.getFullYear() - birthDate.getFullYear();
-        const m = today.getMonth() - birthDate.getMonth();
 
-        const is18 =
-          age > 18 ||
-          (age === 18 && m >= 0 && today.getDate() >= birthDate.getDate());
-
-        if (!dobInput || isNaN(birthDate) || !is18) {
-          dobError.innerText = "*Must be 18 or older.";
+        if (!dobInput || isNaN(birthDate) || age < 18) {
+          dobError.innerText = "*Must be 18 years or older.";
           return false;
         } else {
           dobError.innerText = "";
@@ -306,6 +325,7 @@
           return true;
         }
       }
+
       function validate() {
         const nameValid = validateName();
         const emailValid = validateEmail();
@@ -326,8 +346,10 @@
           colorValid &&
           termsValid
         ) {
-          alert("✅ Registration Complete!");
-          document.getElementById("form").reset();
+          alert("Registration Complete!");
+          return true; // Submit the form
+        } else {
+          return false; // Prevent submission
         }
       }
     </script>
