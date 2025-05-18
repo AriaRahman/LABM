@@ -49,7 +49,7 @@
       .right-box {
         width: 50%;
         background-color: burlywood;
-        padding: 15px
+        padding: 15px;
       }
     </style>
   </head>
@@ -68,7 +68,7 @@
           <h2 style="text-align: center; margin-bottom: 10px">
             REGISTRATION FORM
           </h2>
-          <form id="form" action="register.php" method="post" target="_blank">
+          <form id="form" action="register.php" method="post">
             <!--this is for USERNAME -->
 
             <label for="USERname">User Name:</label>
@@ -171,7 +171,7 @@
             />
           </form>
         </div>
-            <!--LOG IN PART -->
+        <!--LOG IN PART -->
 
         <div class="left-bottom">
           <h2 style="text-align: center; margin-bottom: 10px">LOGIN</h2>
@@ -198,10 +198,10 @@
           </form>
         </div>
       </div>
-                  <!--MAKING TABLE FOR AQI -->
+      <!--MAKING TABLE FOR AQI -->
 
       <div class="right-box">
-        <h2 style="text-align: center; margin-bottom: 10px" >
+        <h2 style="text-align: center; margin-bottom: 10px">
           Air Quality Index (AQI)
         </h2>
         <table
@@ -314,21 +314,16 @@
           </tbody>
         </table>
 
-
-
-            <!--JUST TO MAKE SURE REQUESTPAGE WORK-->
-
-               <form id="form" action="request.php" method="post" target="_blank"></form>
-               <input
-              type="submit"
-              name="submit"
-              value="request"
-              style="text-align: center"
-            />
-          </form>
-
+        <!--JUST TO MAKE SURE REQUESTPAGE WORK-->
+        <form id="form" action="request.php" method="post">
+          <input
+            type="submit"
+            name="submit"
+            value="requestpage"
+            style="text-align: right"
+          />
+        </form>
       </div>
-
     </div>
     <!--working on a script: validation-->
 

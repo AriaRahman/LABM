@@ -1,13 +1,13 @@
 <?php
 session_start(); // Start the session
 
-// DB connection
+// Connect to the database
 $conn = new mysqli("localhost", "root", "", "AQI");
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch cities from INFO table
+// Fetch unique cities from INFO table
 $sql = "SELECT DISTINCT city FROM info ORDER BY city";
 $result = $conn->query($sql);
 ?>
@@ -20,29 +20,29 @@ $result = $conn->query($sql);
     </style>
 </head>
 <body>
-    <h2>Select 10 cities to view AQI</h2>
+    <h2>Select 10 Cities to View AQI</h2>
 
-    <form method="post" action="showaqi.php" onsubmit="return validateCheckboxLimit()">
+    <form method="post" action="showaqi.php">
         <?php
         if ($result->num_rows > 0) {
-            while($row = $result->fetch_assoc()) {
+            while ($row = $result->fetch_assoc()) {
                 $city = htmlspecialchars($row['city']);
-                echo "<label><input type='checkbox' name='cities[]' value='$city'> $city</label>";
+                echo "<label><input type='checkbox' name='cities[]' value='{$city}'> {$city}</label>";
             }
         } else {
-            echo "No cities found in the database.";
+            echo "<p>No cities found in the database.</p>";
         }
         $conn->close();
         ?>
         <br>
-        <input type="submit" name="submit" value="Show AQI">
+        <input type="submit" name="submit" value="Show AQI" onclick="return validateCheckboxLimit();">
     </form>
 
     <script>
     function validateCheckboxLimit() {
-        const checkboxes = document.querySelectorAll("input[name='cities[]']:checked");
-        if (checkboxes.length==10) {
-            alert("Please select 10 cities.");
+        const selected = document.querySelectorAll("input[name='cities[]']:checked");
+        if (selected.length !== 10) {
+            alert("Please select exactly 10 cities.");
             return false;
         }
         return true;
