@@ -1,55 +1,73 @@
 <?php
 session_start();
 
-if (isset($_POST['submit'])) {
-    // Store session variables (except color)
-    $_SESSION['username'] = $_POST['USERname'];
-    $_SESSION['email'] = $_POST['email'];
-    $_SESSION['dob'] = $_POST['DOB'];
-    $_SESSION['gender'] = $_POST['gender'];
-    $_SESSION['country'] = $_POST['country'];
-    $_SESSION['aqi'] = $_POST['AQI'];
-    //$_SESSION['password'] = $_POST['password'];
-    // Save background color in a cookie (expires in 1 hour)
-    setcookie("bgcolor", $_POST['color'], time() + 3600, "/");
+if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['action'])) {
+    $username     = $_POST['USERname'];
+    $email        = $_POST['email'];
+    $dob          = $_POST['DOB'];
+    $gender       = $_POST['gender'];
+    $country      = $_POST['country'];
+    $aqi          = $_POST['AQI'];
+    $userpassword = $_POST['userpassword'];
+    $color        = $_POST['color'];
 
-    // Store password securely
-   $hashedPassword = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    echo '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: auto; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #fdf6e3; border: 2px solid #ccc; border-radius: 10px;">';
+    echo "<h1>USER DETAILS</h1>";
+    echo "<table border='1' cellpadding='10' cellspacing='0' style='margin-top: 20px; background-color: #fffbe6; border-collapse: collapse;'>";
+    echo "<tr style='background-color: #f5c542; color: #000;'><th>Field</th><th>Value</th></tr>";
+    echo "<tr><td>Username</td><td>$username</td></tr>";
+    echo "<tr><td>Email</td><td>$email</td></tr>";
+    echo "<tr><td>Date of Birth</td><td>$dob</td></tr>";
+    echo "<tr><td>Gender</td><td>$gender</td></tr>";
+    echo "<tr><td>Country</td><td>$country</td></tr>";
+    echo "<tr><td>AQI opinion</td><td>$aqi</td></tr>";
+    echo "<tr><td>Background Color (saved in Cookie)</td><td>$color</td></tr>";
+    echo "</table>";
 
-    // Database connection
-    $conn = new mysqli("localhost", "root", "", "AQI");
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
+    echo '<form method="POST" action="process.php" style="margin-top: 20px;">';
+    echo "<input type='hidden' name='USERname' value='$username'>";
+    echo "<input type='hidden' name='email' value='$email'>";
+    echo "<input type='hidden' name='DOB' value='$dob'>";
+    echo "<input type='hidden' name='gender' value='$gender'>";
+    echo "<input type='hidden' name='country' value='$country'>";
+    echo "<input type='hidden' name='AQI' value='$aqi'>";
+    echo "<input type='hidden' name='userpassword' value='$userpassword'>";
+    echo "<input type='hidden' name='color' value='$color'>";
+    echo "<input type='hidden' name='action' value='confirm'>";
+    echo "<input type='submit' value=' Confirm' style='padding: 10px 20px; margin-right: 10px; background-color: green; color: white; border: none; border-radius: 5px;'>";
+    echo "<input type='button' value='Cancel' onclick='history.back()' style='padding: 10px 20px; background-color: red; color: white; border: none; border-radius: 5px;'>";
+    echo '</form>';
+    echo '</div>';
+}
+
+elseif ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['action'] === 'confirm') {
+    $username     = $_POST['USERname'];
+    $email        = $_POST['email'];
+    $dob          = $_POST['DOB'];
+    $gender       = $_POST['gender'];
+    $country      = $_POST['country'];
+    $aqi          = $_POST['AQI'];
+    $userpassword = $_POST['userpassword'];
+    $color        = $_POST['color'];
+
+    setcookie('background_color', $color, time() + (30 * 24 * 60 * 60), "/");
+
+    $con = mysqli_connect("localhost", "root", "", "aqi");
+    if (!$con) {
+        die("Connection failed: " . mysqli_connect_error());
     }
 
-    // Insert data into users table
-    $stmt = $conn->prepare("INSERT INTO users (username, email, dob, gender, country, aqi, password) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssssss", $_POST['USERname'], $_POST['email'], $_POST['DOB'], $_POST['gender'], $_POST['country'], $_POST['AQI'], $hashedPassword);
-    
-    if ($stmt->execute()) {
-        echo "<h2>Registration Successful!</h2>";
+    $sql = "INSERT INTO users (username, email, dob, gender, country, aqi, userpassword)
+            VALUES ('$username', '$email', '$dob', '$gender', '$country', '$aqi', '$userpassword')";
 
-        // ✅ Show the submitted data in a table
-        echo "<table border='1' cellpadding='10' style='margin-top: 20px'>";
-        echo "<tr><th>Field</th><th>Value</th></tr>";
-        echo "<tr><td>Username</td><td>" . $_POST['USERname'] . "</td></tr>";
-        echo "<tr><td>Email</td><td>" . $_POST['email'] . "</td></tr>";
-        echo "<tr><td>Date of Birth</td><td>" . $_POST['DOB'] . "</td></tr>";
-        echo "<tr><td>Gender</td><td>" . $_POST['gender'] . "</td></tr>";
-        echo "<tr><td>Country</td><td>" . $_POST['country'] . "</td></tr>";
-        echo "<tr><td>AQI opinion</td><td>" . $_POST['AQI'] . "</td></tr>";
-        echo "<tr><td>Background Color (Cookie)</td><td>" . $_POST['color'] . "</td></tr>";
-        echo "</table>";
+    if (mysqli_query($con, $sql)) {
+        $_SESSION['username'] = $username; 
+        mysqli_close($con);
+        header("Location: request.php");   
+        exit;
     } else {
-        echo "Error: " . $stmt->error;
+        echo "Error: " . mysqli_error($con);
+        mysqli_close($con);
     }
-
-    $stmt->close();
-    $conn->close();
 }
 ?>
-
-<!-- Back to Home Button -->
-<form action="index.html" method="get" style="margin-top: 20px;">
-    <input type="submit" value="Back to Home Page" />
-</form>
